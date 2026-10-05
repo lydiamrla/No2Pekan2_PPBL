@@ -8,13 +8,11 @@ class AppRoutes {
   static const String main = '/main';
   static const String bookDetail = '/book-detail';
 
-  // Map Routes Utama
   static Map<String, WidgetBuilder> get routes => {
         root: (context) => const MainWrapper(initialIndex: 0),
         main: (context) => const MainWrapper(initialIndex: 0),
       };
 
-  // Generator untuk route yang membutuhkan parsing arguments
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     if (settings.name == bookDetail) {
       final book = settings.arguments as Book;
@@ -26,7 +24,6 @@ class AppRoutes {
     return null;
   }
 
-  // Fallback Halaman 404 jika route tidak ditemukan
   static Route<dynamic> onUnknownRoute(RouteSettings settings) {
     return MaterialPageRoute(
       builder: (context) => Scaffold(
@@ -35,20 +32,13 @@ class AppRoutes {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 80, color: Colors.redAccent),
+              const Icon(Icons.error_outline, size: 80, color: Colors.purple),
               const SizedBox(height: 16),
-              Text(
-                '404\nRoute "${settings.name}" tidak ditemukan!',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(context, root, (route) => false);
-                },
-                icon: const Icon(Icons.home),
-                label: const Text('Kembali ke Beranda'),
+              Text('404\nRoute "${settings.name}" tidak ditemukan!', textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => Navigator.pushNamedAndRemoveUntil(context, root, (route) => false),
+                child: const Text('Kembali ke Beranda'),
               )
             ],
           ),

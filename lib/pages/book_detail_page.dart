@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/book.dart';
+import '../providers/cart_provider.dart';
+import '../providers/favorite_provider.dart';
 
 class BookDetailPage extends StatelessWidget {
   final Book book;
@@ -8,94 +11,75 @@ class BookDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isFav = context.watch<FavoriteProvider>().isFavorite(book);
+    final isInCart = context.watch<CartProvider>().isBookInCart(book);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detail Buku'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            // Pop kembali ke halaman sebelumnya
-            Navigator.pop(context);
-          },
-        ),
+        actions: [
+          IconButton(
+            icon: Icon(isFav ? Icons.favorite : Icons.favorite_border, color: Colors.red),
+            onPressed: () => context.read<FavoriteProvider>().toggleFavorite(book),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  book.image,
-                  height: 260,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    height: 260,
-                    width: 180,
-                    color: Colors.grey.shade300,
-                    child: const Icon(Icons.book, size: 80),
-                  ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(color: const Color(0xFF6C5CE7).withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 10)),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.network(book.image, height: 260, fit: BoxFit.cover),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            Text(
-              book.title,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
+            const SizedBox(height: 28),
+            Text(book.title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
-            Text(
-              'Penulis: ${book.author}',
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Chip(
-                  label: Text(book.category),
-                  backgroundColor: Colors.blue.shade50,
-                ),
-                Text(
-                  'Rp ${book.price.toStringAsFixed(0)}',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  ),
-                ),
-              ],
-            ),
+            Text('Oleh ${book.author}', style: const TextStyle(color: Colors.grey, fontSize: 16)),
+            const SizedBox(height: 16),
+            Text('Rp ${book.price.toStringAsFixed(0)}', style: const TextStyle(fontSize: 22, color: Color(0xFF6C5CE7), fontWeight: FontWeight.bold)),
             const Divider(height: 32),
-            const Text(
-              'Deskripsi Buku',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            const Text('Deskripsi', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text(
-              book.description,
-              style: const TextStyle(fontSize: 15, height: 1.5),
-            ),
+            Text(book.description, style: const TextStyle(height: 1.6, color: Colors.black87)),
           ],
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ElevatedButton.icon(
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${book.title} berhasil ditambahkan ke keranjang!')),
-            );
-          },
-          icon: const Icon(Icons.add_shopping_cart),
-          label: const Text('Tambah ke Keranjang'),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.all(20),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(colors: [Color(0xFF0984E3), Color(0xFF6C5CE7)]),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: ElevatedButton.icon(
+            onPressed: () {
+              if (isInCart) {
+                context.read<CartProvider>().removeFromCart(book);
+              } else {
+                context.read<CartProvider>().addToCart(book);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            icon: Icon(isInCart ? Icons.delete_outline : Icons.shopping_cart, color: Colors.white),
+            label: Text(
+              isInCart ? 'Hapus dari Keranjang' : 'Tambah ke Keranjang',
+              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ),
