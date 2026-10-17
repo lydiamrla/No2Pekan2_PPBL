@@ -1,37 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/book.dart';
 import '../navigation/app_routes.dart';
+import '../providers/review_provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final reviewProvider = context.watch<ReviewProvider>();
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 120.0,
+            expandedHeight: 100.0,
             floating: true,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
-              title: Row(
-                children: [
-                  ShaderMask(
-                    shaderCallback: (bounds) => const LinearGradient(
-                      colors: [Color(0xFF0984E3), Color(0xFF6C5CE7)],
-                    ).createShader(bounds),
-                    child: const Icon(Icons.menu_book_rounded, color: Colors.white),
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    'IKAPI BookStore',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2D3436), fontSize: 18),
-                  ),
-                ],
-              ),
-            ),
+            title: const Text('IKAPI BookStore', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           SliverToBoxAdapter(
             child: Padding(
@@ -39,81 +25,29 @@ class HomePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Banner Gradasi Biru - Ungu
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF0984E3), Color(0xFF6C5CE7)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF6C5CE7).withOpacity(0.3),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Special Promo! ✨', style: TextStyle(color: Colors.white70, fontSize: 14)),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Diskon Hingga 40%\nUntuk Buku Pilihan',
-                          style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF6C5CE7),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          child: const Text('Klaim Promo', style: TextStyle(fontWeight: FontWeight.bold)),
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 28),
                   const Text('Populer Minggu Ini 🔥', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
-                  
-                  // Horizontal List
+                  const SizedBox(height: 12),
                   SizedBox(
-                    height: 240,
+                    height: 220,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: dummyBooks.length,
                       itemBuilder: (context, index) {
                         final book = dummyBooks[index];
-                        return Container(
-                          width: 140,
-                          margin: const EdgeInsets.only(right: 16),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, AppRoutes.bookDetail, arguments: book);
-                            },
+                        return GestureDetector(
+                          onTap: () => Navigator.pushNamed(context, AppRoutes.bookDetail, arguments: book),
+                          child: Container(
+                            width: 130,
+                            margin: const EdgeInsets.only(right: 12),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Image.network(
-                                    book.image,
-                                    height: 160,
-                                    width: 140,
-                                    fit: BoxFit.cover,
-                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.network(book.image, height: 150, width: 130, fit: BoxFit.cover),
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 6),
                                 Text(book.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                Text('Rp ${book.price.toStringAsFixed(0)}', style: const TextStyle(color: Color(0xFF6C5CE7), fontWeight: FontWeight.w600)),
                               ],
                             ),
                           ),
@@ -121,11 +55,43 @@ class HomePage extends StatelessWidget {
                       },
                     ),
                   ),
+                  const SizedBox(height: 24),
+
+                  // Menampilkan ulasan real-time dari ReviewProvider
+                  const Text('Ulasan Pembaca Terbaru 💬', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  reviewProvider.reviews.isEmpty
+                      ? const Text('Belum ada ulasan.')
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: reviewProvider.reviews.length,
+                          itemBuilder: (context, index) {
+                            final rev = reviewProvider.reviews[index];
+                            return Card(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              child: ListTile(
+                                title: Text('${rev.bookTitle} (${rev.rating}⭐)'),
+                                subtitle: Text('"${rev.reviewText}" - ${rev.reviewerName}'),
+                              ),
+                            );
+                          },
+                        ),
                 ],
               ),
             ),
           )
         ],
+      ),
+
+      // Interaksi FloatingActionButton untuk pindah ke Form
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.pushNamed(context, AppRoutes.addReview);
+        },
+        backgroundColor: const Color(0xFF6C5CE7),
+        icon: const Icon(Icons.rate_review, color: Colors.white),
+        label: const Text('Tulis Ulasan', style: TextStyle(color: Colors.white)),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/book.dart';
+import '../pages/add_review_page.dart'; // Import halaman baru
 import '../pages/main_wrapper.dart';
 import '../pages/book_detail_page.dart';
 
@@ -7,10 +8,12 @@ class AppRoutes {
   static const String root = '/';
   static const String main = '/main';
   static const String bookDetail = '/book-detail';
+  static const String addReview = '/add-review'; // <-- PASTIKAN BARIS INI ADA
 
   static Map<String, WidgetBuilder> get routes => {
         root: (context) => const MainWrapper(initialIndex: 0),
         main: (context) => const MainWrapper(initialIndex: 0),
+        addReview: (context) => const AddReviewPage(), // <-- PASTIKAN BARIS INI ADA
       };
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -29,19 +32,7 @@ class AppRoutes {
       builder: (context) => Scaffold(
         appBar: AppBar(title: const Text('Halaman Tidak Ditemukan')),
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 80, color: Colors.purple),
-              const SizedBox(height: 16),
-              Text('404\nRoute "${settings.name}" tidak ditemukan!', textAlign: TextAlign.center),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => Navigator.pushNamedAndRemoveUntil(context, root, (route) => false),
-                child: const Text('Kembali ke Beranda'),
-              )
-            ],
-          ),
+          child: Text('404 - Route "${settings.name}" tidak ditemukan!'),
         ),
       ),
     );
