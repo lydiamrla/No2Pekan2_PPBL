@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/book.dart';
+import '../models/review.dart';
 import '../navigation/app_routes.dart';
-import '../providers/review_provider.dart';
+import '../cubits/review_cubit.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final reviewProvider = context.watch<ReviewProvider>();
-
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar(
+          const SliverAppBar(
             expandedHeight: 100.0,
             floating: true,
-            title: const Text('IKAPI BookStore', style: TextStyle(fontWeight: FontWeight.bold)),
+            title: Text('IKAPI BookStore', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           SliverToBoxAdapter(
             child: Padding(
@@ -57,26 +56,33 @@ class HomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
 
-                  // Menampilkan ulasan real-time dari ReviewProvider
                   const Text('Ulasan Pembaca Terbaru 💬', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
-                  reviewProvider.reviews.isEmpty
-                      ? const Text('Belum ada ulasan.')
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: reviewProvider.reviews.length,
-                          itemBuilder: (context, index) {
-                            final rev = reviewProvider.reviews[index];
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              child: ListTile(
-                                title: Text('${rev.bookTitle} (${rev.rating}⭐)'),
-                                subtitle: Text('"${rev.reviewText}" - ${rev.reviewerName}'),
-                              ),
-                            );
-                          },
-                        ),
+                  
+                  // Menggunakan BlocBuilder untuk merender ulasan dari ReviewCubit
+                  BlocBuilder<ReviewCubit, List<Review>>(
+                    builder: (context, reviews) {
+                      if (reviews.isEmpty) {
+                        return const Text('Belum ada ulasan.');
+                      }
+
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: reviews.length,
+                        itemBuilder: (context, index) {
+                          final rev = reviews[index];
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: ListTile(
+                              title: Text('${rev.bookTitle} (${rev.rating}⭐)'),
+                              subtitle: Text('"${rev.reviewText}" - ${rev.reviewerName}'),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -84,7 +90,6 @@ class HomePage extends StatelessWidget {
         ],
       ),
 
-      // Interaksi FloatingActionButton untuk pindah ke Form
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.pushNamed(context, AppRoutes.addReview);

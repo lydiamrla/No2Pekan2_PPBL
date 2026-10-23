@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubits/cart_cubit.dart';
+import '../models/book.dart';
 import 'home_page.dart';
 import 'books_page.dart';
 import 'cart_page.dart';
@@ -28,6 +31,23 @@ class _MainWrapperState extends State<MainWrapper> {
     _currentIndex = widget.initialIndex;
   }
 
+  Widget _buatIkonKeranjang({required bool selected}) {
+    final iconBase = Icon(
+      selected ? Icons.shopping_bag : Icons.shopping_bag_outlined,
+      color: const Color(0xFF6C5CE7),
+    );
+    return BlocSelector<CartCubit, List<Book>, int>(
+      selector: (state) => state.length,
+      builder: (context, total) {
+        if (total == 0) return iconBase;
+        return Badge(
+          label: Text('$total'),
+          child: iconBase,
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,23 +74,23 @@ class _MainWrapperState extends State<MainWrapper> {
               _currentIndex = index;
             });
           },
-          destinations: const [
-            NavigationDestination(
+          destinations: [
+            const NavigationDestination(
               icon: Icon(Icons.home_outlined),
               selectedIcon: Icon(Icons.home, color: Color(0xFF6C5CE7)),
               label: 'Home',
             ),
-            NavigationDestination(
+            const NavigationDestination(
               icon: Icon(Icons.auto_stories_outlined),
               selectedIcon: Icon(Icons.auto_stories, color: Color(0xFF6C5CE7)),
               label: 'Buku',
             ),
             NavigationDestination(
-              icon: Icon(Icons.shopping_bag_outlined),
-              selectedIcon: Icon(Icons.shopping_bag, color: Color(0xFF6C5CE7)),
+              icon: _buatIkonKeranjang(selected: false),
+              selectedIcon: _buatIkonKeranjang(selected: true),
               label: 'Keranjang',
             ),
-            NavigationDestination(
+            const NavigationDestination(
               icon: Icon(Icons.person_outline),
               selectedIcon: Icon(Icons.person, color: Color(0xFF6C5CE7)),
               label: 'Profil',

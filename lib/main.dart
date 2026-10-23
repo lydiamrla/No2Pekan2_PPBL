@@ -1,21 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'cubits/favorit_cubit.dart';
+import 'cubits/cart_cubit.dart';
+import 'cubits/review_cubit.dart'; 
 import 'navigation/app_routes.dart';
-import 'providers/cart_provider.dart';
-import 'providers/favorite_provider.dart';
-import 'providers/review_provider.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => CartProvider()),
-        ChangeNotifierProvider(create: (_) => FavoriteProvider()),
-        ChangeNotifierProvider(create: (_) => ReviewProvider()), // Provider Baru
-      ],
-      child: const IkapiApp(),
-    ),
-  );
+  runApp(const IkapiApp());
 }
 
 class IkapiApp extends StatelessWidget {
@@ -23,17 +14,30 @@ class IkapiApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'IKAPI Bookstore',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: const Color(0xFF6C5CE7),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<FavoriteCubit>(
+          create: (context) => FavoriteCubit(),
+        ),
+        BlocProvider<CartCubit>(
+          create: (context) => CartCubit(),
+        ),
+        BlocProvider<ReviewCubit>( 
+          create: (context) => ReviewCubit(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'IKAPI Bookstore',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorSchemeSeed: const Color(0xFF6C5CE7),
+        ),
+        initialRoute: AppRoutes.root,
+        routes: AppRoutes.routes,
+        onGenerateRoute: AppRoutes.onGenerateRoute,
+        onUnknownRoute: AppRoutes.onUnknownRoute,
+        debugShowCheckedModeBanner: false,
       ),
-      initialRoute: AppRoutes.root,
-      routes: AppRoutes.routes,
-      onGenerateRoute: AppRoutes.onGenerateRoute,
-      onUnknownRoute: AppRoutes.onUnknownRoute,
     );
   }
 }

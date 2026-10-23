@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/favorite_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubits/favorit_cubit.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -14,8 +14,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final favCount = context.select<FavoriteProvider, int>((p) => p.favoriteBooks.length);
-
     return Scaffold(
       appBar: AppBar(title: const Text('Profil', style: TextStyle(fontWeight: FontWeight.bold))),
       body: Padding(
@@ -39,7 +37,6 @@ class _ProfilePageState extends State<ProfilePage> {
             const Text('McCarney@ikapi.ac.id', style: TextStyle(color: Colors.grey)),
             const SizedBox(height: 20),
             
-            // Toggle State Lokal
             OutlinedButton.icon(
               onPressed: () {
                 setState(() {
@@ -51,14 +48,17 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const Divider(height: 40),
             
-            // State Global
-            ListTile(
-              leading: const Icon(Icons.favorite, color: Colors.redAccent),
-              title: const Text('Buku Favorit Saya'),
-              trailing: Chip(
-                label: Text('$favCount Item'),
-                backgroundColor: Colors.purple.shade50,
-              ),
+            BlocBuilder<FavoriteCubit, Set<String>>(
+              builder: (context, favoritSet) {
+                return ListTile(
+                  leading: const Icon(Icons.star, color: Colors.amber),
+                  title: const Text('Buku Favorit Saya'),
+                  trailing: Chip(
+                    label: Text('${favoritSet.length} Item'),
+                    backgroundColor: Colors.purple.shade50,
+                  ),
+                );
+              },
             ),
           ],
         ),
