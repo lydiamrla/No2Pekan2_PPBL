@@ -34,7 +34,7 @@ class _MainWrapperState extends State<MainWrapper> {
   Widget _buatIkonKeranjang({required bool selected}) {
     final iconBase = Icon(
       selected ? Icons.shopping_bag : Icons.shopping_bag_outlined,
-      color: const Color(0xFF6C5CE7),
+      color: Theme.of(context).colorScheme.primary,
     );
     return BlocSelector<CartCubit, List<Book>, int>(
       selector: (state) => state.length,
@@ -50,6 +50,8 @@ class _MainWrapperState extends State<MainWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
@@ -59,7 +61,7 @@ class _MainWrapperState extends State<MainWrapper> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.purple.withOpacity(0.1),
+              color: primaryColor.withOpacity(0.1),
               blurRadius: 20,
               offset: const Offset(0, -5),
             ),
@@ -68,21 +70,21 @@ class _MainWrapperState extends State<MainWrapper> {
         child: NavigationBar(
           selectedIndex: _currentIndex,
           elevation: 0,
-          indicatorColor: const Color(0xFF6C5CE7).withOpacity(0.2),
+          indicatorColor: primaryColor.withOpacity(0.2),
           onDestinationSelected: (int index) {
             setState(() {
               _currentIndex = index;
             });
           },
           destinations: [
-            const NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home, color: Color(0xFF6C5CE7)),
+            NavigationDestination(
+              icon: const Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home, color: primaryColor),
               label: 'Home',
             ),
-            const NavigationDestination(
-              icon: Icon(Icons.auto_stories_outlined),
-              selectedIcon: Icon(Icons.auto_stories, color: Color(0xFF6C5CE7)),
+            NavigationDestination(
+              icon: const Icon(Icons.auto_stories_outlined),
+              selectedIcon: Icon(Icons.auto_stories, color: primaryColor),
               label: 'Buku',
             ),
             NavigationDestination(
@@ -90,9 +92,9 @@ class _MainWrapperState extends State<MainWrapper> {
               selectedIcon: _buatIkonKeranjang(selected: true),
               label: 'Keranjang',
             ),
-            const NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person, color: Color(0xFF6C5CE7)),
+            NavigationDestination(
+              icon: const Icon(Icons.person_outline),
+              selectedIcon: Icon(Icons.person, color: primaryColor),
               label: 'Profil',
             ),
           ],

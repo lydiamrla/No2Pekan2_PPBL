@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/favorit_cubit.dart';
+import '../cubits/theme_cubit.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -26,10 +27,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 shape: BoxShape.circle,
                 gradient: LinearGradient(colors: [Color(0xFF0984E3), Color(0xFF6C5CE7)]),
               ),
-              child: const CircleAvatar(
+              child: CircleAvatar(
                 radius: 46,
-                backgroundColor: Colors.white,
-                child: Icon(Icons.person, size: 50, color: Color(0xFF6C5CE7)),
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                child: const Icon(Icons.person, size: 50, color: Color(0xFF6C5CE7)),
               ),
             ),
             const SizedBox(height: 12),
@@ -46,7 +47,26 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: Icon(_isEditing ? Icons.check : Icons.edit),
               label: Text(_isEditing ? 'Simpan Profil' : 'Edit Profil'),
             ),
-            const Divider(height: 40),
+            const Divider(height: 30),
+
+            // ===== SAKELAR MODE GELAP (DARK THEME SWITCH) =====
+            Card(
+              child: BlocBuilder<ThemeCubit, ThemeMode>(
+                builder: (context, themeMode) {
+                  final isDarkMode = themeMode == ThemeMode.dark;
+                  return SwitchListTile(
+                    title: const Text('Mode Gelap (Dark Theme)'),
+                    subtitle: Text(isDarkMode ? 'Mode gelap aktif' : 'Mode terang aktif'),
+                    secondary: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
+                    value: isDarkMode,
+                    onChanged: (_) {
+                      context.read<ThemeCubit>().toggleTheme();
+                    },
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 10),
             
             BlocBuilder<FavoriteCubit, Set<String>>(
               builder: (context, favoritSet) {
@@ -55,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: const Text('Buku Favorit Saya'),
                   trailing: Chip(
                     label: Text('${favoritSet.length} Item'),
-                    backgroundColor: Colors.purple.shade50,
+                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                   ),
                 );
               },
