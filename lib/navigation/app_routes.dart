@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/book.dart';
-import '../pages/add_review_page.dart'; // Import halaman baru
+import '../pages/add_review_page.dart';
+import '../pages/halaman_riwayat_pencairan.dart';
 import '../pages/main_wrapper.dart';
 import '../pages/book_detail_page.dart';
 
@@ -8,12 +9,14 @@ class AppRoutes {
   static const String root = '/';
   static const String main = '/main';
   static const String bookDetail = '/book-detail';
-  static const String addReview = '/add-review'; // <-- PASTIKAN BARIS INI ADA
+  static const String addReview = '/add-review';
+  static const String riwayatPencairan = '/riwayat-pencairan';
 
   static Map<String, WidgetBuilder> get routes => {
         root: (context) => const MainWrapper(initialIndex: 0),
         main: (context) => const MainWrapper(initialIndex: 0),
-        addReview: (context) => const AddReviewPage(), // <-- PASTIKAN BARIS INI ADA
+        addReview: (context) => const AddReviewPage(),
+        riwayatPencairan: (context) => const HalamanRiwayatPencairan(),
       };
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {

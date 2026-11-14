@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/favorit_cubit.dart';
 import '../cubits/theme_cubit.dart';
+import '../navigation/app_routes.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -16,8 +17,10 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profil', style: TextStyle(fontWeight: FontWeight.bold))),
-      body: Padding(
+      appBar: AppBar(
+          title: const Text('Profil',
+              style: TextStyle(fontWeight: FontWeight.bold))),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
@@ -25,19 +28,23 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.all(4),
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(colors: [Color(0xFF0984E3), Color(0xFF6C5CE7)]),
+                gradient: LinearGradient(
+                    colors: [Color(0xFF0984E3), Color(0xFF6C5CE7)]),
               ),
               child: CircleAvatar(
                 radius: 46,
                 backgroundColor: Theme.of(context).colorScheme.surface,
-                child: const Icon(Icons.person, size: 50, color: Color(0xFF6C5CE7)),
+                child:
+                    const Icon(Icons.person, size: 50, color: Color(0xFF6C5CE7)),
               ),
             ),
             const SizedBox(height: 12),
-            const Text('Paul McCarney', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            const Text('McCarney@ikapi.ac.id', style: TextStyle(color: Colors.grey)),
+            const Text('Paul McCarney',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const Text('McCarney@ikapi.ac.id',
+                style: TextStyle(color: Colors.grey)),
             const SizedBox(height: 20),
-            
+
             OutlinedButton.icon(
               onPressed: () {
                 setState(() {
@@ -56,8 +63,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   final isDarkMode = themeMode == ThemeMode.dark;
                   return SwitchListTile(
                     title: const Text('Mode Gelap (Dark Theme)'),
-                    subtitle: Text(isDarkMode ? 'Mode gelap aktif' : 'Mode terang aktif'),
-                    secondary: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
+                    subtitle: Text(
+                        isDarkMode ? 'Mode gelap aktif' : 'Mode terang aktif'),
+                    secondary:
+                        Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
                     value: isDarkMode,
                     onChanged: (_) {
                       context.read<ThemeCubit>().toggleTheme();
@@ -67,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             const SizedBox(height: 10),
-            
+
             BlocBuilder<FavoriteCubit, Set<String>>(
               builder: (context, favoritSet) {
                 return ListTile(
@@ -75,10 +84,26 @@ class _ProfilePageState extends State<ProfilePage> {
                   title: const Text('Buku Favorit Saya'),
                   trailing: Chip(
                     label: Text('${favoritSet.length} Item'),
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.primaryContainer,
                   ),
                 );
               },
+            ),
+            const SizedBox(height: 10),
+
+            // ===== MENU PANEL ADMIN: RIWAYAT PENCAIRAN DANA (SQLITE) =====
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.account_balance_wallet,
+                    color: Color(0xFF0984E3)),
+                title: const Text('Riwayat Pencairan Dana'),
+                subtitle: const Text('Panel Admin IKAPI (SQLite)'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.riwayatPencairan);
+                },
+              ),
             ),
           ],
         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color seedColor = Colors.indigo; // Warna identitas aplikasi IKAPI
+  static const Color seedColor = Colors.indigo; 
 
   static ThemeData get lightTheme => ThemeData(
         useMaterial3: true,
