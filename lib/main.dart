@@ -2,16 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubits/favorit_cubit.dart';
 import 'cubits/cart_cubit.dart';
-import 'cubits/review_cubit.dart'; 
+import 'cubits/review_cubit.dart';
 import 'cubits/theme_cubit.dart';
+import 'db/hive_helper.dart';
+import 'db/pengaturan_helper.dart';
 import 'navigation/app_routes.dart';
 
-void main() {
-  runApp(const IkapiApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await HiveHelper.instance.init();
+  final isDarkMode = await PengaturanHelper.instance.muatDarkMode();
+
+  runApp(IkapiApp(initialDarkMode: isDarkMode));
 }
 
 class IkapiApp extends StatelessWidget {
-  const IkapiApp({super.key});
+  final bool initialDarkMode;
+
+  const IkapiApp({super.key, required this.initialDarkMode});
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +31,13 @@ class IkapiApp extends StatelessWidget {
         BlocProvider<CartCubit>(
           create: (context) => CartCubit(),
         ),
-        BlocProvider<ReviewCubit>( 
+        BlocProvider<ReviewCubit>(
           create: (context) => ReviewCubit(),
         ),
         BlocProvider<ThemeCubit>(
-          create: (context) => ThemeCubit(),
+          create: (context) => ThemeCubit(
+            initialMode: initialDarkMode ? ThemeMode.dark : ThemeMode.light,
+          ),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(

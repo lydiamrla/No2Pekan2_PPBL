@@ -56,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const Divider(height: 30),
 
-            // ===== SAKELAR MODE GELAP (DARK THEME SWITCH) =====
+            // ===== SAKELAR MODE GELAP (SHARED PREFERENCES) =====
             Card(
               child: BlocBuilder<ThemeCubit, ThemeMode>(
                 builder: (context, themeMode) {
@@ -102,6 +102,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.pushNamed(context, AppRoutes.riwayatPencairan);
+                },
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            // ===== MENU PANEL ADMIN: MODERASI ULASAN BUKU (HIVE) =====
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.gavel, color: Color(0xFF6C5CE7)),
+                title: const Text('Moderasi Ulasan Buku'),
+                subtitle: const Text('Panel Admin IKAPI (Hive)'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.moderasiUlasan);
                 },
               ),
             ),
